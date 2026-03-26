@@ -18,4 +18,18 @@ router.post('/files', upload.single('avatar'), (req, res, next)=>{
 })
 
 
+router.post('/files-bulk', upload.array('avatar', 5), (req, res, next)=>{
+    try {
+
+        console.log(req.file)
+
+
+        res.send('File uploaded successfully')
+        
+    } catch (error) {
+        next(error)
+    }
+})
+
+
 module.exports = router
