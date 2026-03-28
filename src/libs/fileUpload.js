@@ -4,10 +4,10 @@ const path = require('path')
 
 
 const storage = multer.diskStorage({
-    destination: (req, file, done)=>{
+    destination: (req, file, done) => {
         done(null, path.join(process.cwd(), 'upload'),)
     },
-    filename: (req, file, done)=>{
+    filename: (req, file, done) => {
 
         // get file extension
         const fileExt = path.extname(file.originalname).toLowerCase()
@@ -20,16 +20,32 @@ const storage = multer.diskStorage({
 })
 
 
-const fileFilter = (req, file, done)=>{
-    const allowedMimeTypes = ['image/jpeg', 'image/png'];
+const fileFilter = (req, file, done) => {
     const filetype = file.mimetype.toLowerCase();
+    const fieldName = file.fieldname;
 
-    if(allowedMimeTypes.includes(filetype)){
-        done(null, true);
-    }else {
-        done(new Error('Invalid file types'), false)
+    // Use === for comparison
+    if (fieldName === 'avatar' || fieldName === 'nid') {
+        const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+        
+        if (allowedMimeTypes.includes(filetype)) {
+            return done(null, true); // Use return to stop execution here
+        } else {
+            return done(new Error('Invalid image type for avatar'), false);
+        }
     }
-}
+
+    if (fieldName === 'license') {
+        const allowedMimeTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+        
+        if (allowedMimeTypes.includes(filetype)) {
+            return done(null, true);
+        } else {
+            return done(new Error('Invalid document type for license'), false);
+        }
+    }
+
+};
 
 
 const upload = multer({
@@ -39,7 +55,7 @@ const upload = multer({
     limits: {
         fileSize: 5 * 1024 * 1024
     },
-   
+
 })
 
 
